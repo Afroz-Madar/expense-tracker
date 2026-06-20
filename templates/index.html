@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker - Today</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-tabs a, .nav-tabs button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-tabs a:hover, .nav-tabs button:hover {
+            background: rgba(255,255,255,0.4);
+            transform: translateY(-2px);
+        }
+
+        .nav-tabs a.active, .nav-tabs button.active {
+            background: white;
+            color: #667eea;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .summary-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .summary-item h3 {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .summary-item .amount {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 700px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        button.btn-add {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        button.btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button.btn-add:active {
+            transform: translateY(0);
+        }
+
+        .expenses-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .expense-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateX(5px);
+        }
+
+        .expense-info h4 {
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .expense-info p {
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .expense-amount {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .expense-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        button.btn-delete {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        button.btn-delete:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state p {
+            font-size: 1.1em;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-right: 8px;
+        }
+
+        .alert {
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💰 Expense Tracker</h1>
+            <p>Track your daily spending smartly</p>
+        </header>
+
+        <div class="nav-tabs">
+            <button class="active">Today</button>
+            <a href="/monthly">Monthly Report</a>
+        </div>
+
+        <div class="summary">
+            <div class="summary-item">
+                <h3>Today's Spending</h3>
+                <div class="amount" id="todayTotal">₹{{ today_total }}</div>
+            </div>
+            <div class="summary-item">
+                <h3>Date</h3>
+                <div class="amount" style="font-size: 1.3em;">{{ today.strftime('%d %b %Y') }}</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-bottom: 20px; color: #333;">Add New Expense</h2>
+            
+            <div id="alert"></div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" required>
+                        <option value="">Select Category</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat }}">{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="amount">Amount (₹)</label>
+                    <input type="number" id="amount" placeholder="0.00" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" value="{{ today }}" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description (Optional)</label>
+                <input type="text" id="description" placeholder="e.g., Lunch at cafe">
+            </div>
+
+            <button class="btn-add" onclick="addExpense()">+ Add Expense</button>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-bottom: 20px; color: #333;">Today's Expenses</h2>
+            <div id="expensesList"></div>
+        </div>
+    </div>
+
+    <script>
+        const categories = {{ categories | tojson }};
+
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alert');
+            alertDiv.textContent = message;
+            alertDiv.className = `alert ${type}`;
+            setTimeout(() => alertDiv.className = 'alert', 3000);
+        }
+
+        function addExpense() {
+            const category = document.getElementById('category').value;
+            const amount = document.getElementById('amount').value;
+            const date = document.getElementById('date').value;
+            const description = document.getElementById('description').value;
+
+            if (!category || !amount) {
+                showAlert('Please fill in all required fields', 'error');
+                return;
+            }
+
+            fetch('/api/add-expense', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    category, amount, date, description
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('Expense added successfully!', 'success');
+                    document.getElementById('category').value = '';
+                    document.getElementById('amount').value = '';
+                    document.getElementById('description').value = '';
+                    loadExpenses();
+                } else {
+                    showAlert('Error: ' + data.error, 'error');
+                }
+            })
+            .catch(e => showAlert('Error: ' + e.message, 'error'));
+        }
+
+        function deleteExpense(id) {
+            if (!confirm('Delete this expense?')) return;
+            
+            fetch(`/api/delete-expense/${id}`, { method: 'DELETE' })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('Expense deleted', 'success');
+                    loadExpenses();
+                }
+            });
+        }
+
+        function loadExpenses() {
+            const date = new Date().toISOString().split('T')[0];
+            const expenses = {{ expenses_json | tojson }};
+            const list = document.getElementById('expensesList');
+
+            if (expenses.length === 0) {
+                list.innerHTML = '<div class="empty-state"><p>No expenses today. Start tracking! 🎯</p></div>';
+                updateTotal(0);
+                return;
+            }
+
+            list.innerHTML = expenses.map(e => `
+                <div class="expense-item">
+                    <div class="expense-info">
+                        <h4><span class="category-badge">${e.category}</span></h4>
+                        ${e.description ? `<p>${e.description}</p>` : ''}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div class="expense-amount">₹${e.amount}</div>
+                        <button class="btn-delete" onclick="deleteExpense(${e.id})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+
+            const total = expenses.reduce((sum, e) => sum + e.amount, 0);
+            updateTotal(total);
+        }
+
+        function updateTotal(total) {
+            document.getElementById('todayTotal').textContent = '₹' + total.toFixed(2);
+        }
+
+        // Load on page load
+        loadExpenses();
+    </script>
+</body>
+</html>
